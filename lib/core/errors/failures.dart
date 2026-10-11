@@ -24,14 +24,18 @@ class ServerFailure {
         return ServerFailure('تم إلغاء الطلب');
       case DioExceptionType.connectionError:
         return ServerFailure('لا يوجد اتصال بالإنترنت، تحقق من الشبكة');
+      case DioExceptionType.transformTimeout:
+        return ServerFailure(
+          'استغرق تحويل واستلام البيانات وقتاً أطول من المتوقع',
+        );
       case DioExceptionType.unknown:
+      default:
         return ServerFailure('حدث خطأ غير متوقع، يرجى المحاولة لاحقاً');
     }
   }
 
   factory ServerFailure.fromResponse(int? statusCode, dynamic response) {
     if (statusCode == 400 || statusCode == 401 || statusCode == 403) {
-      // نظرًا لأن الاستجابات غير موحدة، نحاول قراءة الرسالة بشكل آمن
       if (response is Map<String, dynamic> && response.containsKey('message')) {
         return ServerFailure(response['message'].toString());
       }
